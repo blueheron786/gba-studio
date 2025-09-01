@@ -1,24 +1,20 @@
-# GB Studio
+# GBA Studio
 
-[![Github Actions Status](https://github.com/chrismaltby/gb-studio/actions/workflows/main.yml/badge.svg?branch=develop)](https://github.com/chrismaltby/gb-studio/actions?query=branch%3Adevelop) [![Storybook](https://img.shields.io/badge/Storybook-FF4785?logo=storybook&logoColor=white)](https://chrismaltby.github.io/gb-studio/storybook) [![Code Coverage](https://img.shields.io/badge/Coverage-blue?logo=jest&logoColor=white)](https://chrismaltby.github.io/gb-studio/coverage)
+- GBA Studio Copyright (c) 2024 Chris Maltby, released under the [MIT license](https://opensource.org/licenses/MIT).
+- GBA Studio Copyright (c) 2025 Blue Heron, also released under the MIT license.
+g/bxerKnc)
 
-Copyright (c) 2024 Chris Maltby, released under the [MIT license](https://opensource.org/licenses/MIT).
+GBA Studio is an experimental fork of GBA Studio that's tailored for GBA game development. Like the original, GBA Studio aims to provide a quick and easy way to use retro adventure game creator for Game Boy Advance, available for Mac, Linux and Windows.
 
-Patreon: [gbstudiodev](https://www.patreon.com/gbstudiodev)  
-Twitter: [@maltby](https://www.twitter.com/maltby)  
-Reddit: [/r/gbstudio](https://www.reddit.com/r/gbstudio)  
-Discord: [Join Chat](https://discord.gg/bxerKnc)
+For more information see the original [GBA Studio](https://www.gbstudio.dev) site.
 
-GB Studio is a quick and easy to use retro adventure game creator for Game Boy available for Mac, Linux and Windows.
-For more information see the [GB Studio](https://www.gbstudio.dev) site
+![GBA Studio](gbstudio.gif)
 
-![GB Studio](gbstudio.gif)
-
-GB Studio consists of an [Electron](https://electronjs.org/) game builder application and a C based game engine using [GBDK](http://gbdk.sourceforge.net/).
+GBA Studio consists of an [Electron](https://electronjs.org/) game builder application and a C based game engine using [GBDK](http://gbdk.sourceforge.net/).
 
 ## Installation
 
-Download a release for your operating system from the [GB Studio Downloads](https://www.gbstudio.dev/download) page.
+Download a release for your operating system from the [GBA Studio Downloads](https://www.gbstudio.dev/download) page.
 
 Or to run from source, clone this repo then:
 
@@ -39,16 +35,16 @@ After checking out a new version you may also need to fetch dependencies again t
 > npm run fetch-deps
 ```
 
-GB Studio currently uses Node 21.7.1. If you have [NVM](https://github.com/nvm-sh/nvm) installed you can use the included `.nvmrc` to switch to the supported Node version.
+GBA Studio currently uses Node 21.7.1. If you have [NVM](https://github.com/nvm-sh/nvm) installed you can use the included `.nvmrc` to switch to the supported Node version.
 
 ```bash
 > cd gb-studio
 > nvm use
 ```
 
-## GB Studio CLI
+## GBA Studio CLI
 
-Install GB Studio from source as above then
+Install GBA Studio from source as above then
 
 ```bash
 > npm run make:cli
@@ -110,7 +106,6 @@ Pull the latest code and run make:cli again, yarn link is only needed for the fi
 
 ## Note For Translators
 
-If you'd like to help contribute new language localisations to GB Studio you can do so by submitting pull requests adding or updating the JSON files found here https://github.com/chrismaltby/gb-studio/tree/develop/src/lang
 
 If you're looking to update an existing translation with content that is missing, there is a handy script that lists keys found in the English localisation that are not found and copies them to your localisation
 
