@@ -1,4 +1,4 @@
-import Octokit from "@octokit/rest";
+import { Octokit } from "@octokit/rest";
 import inbuiltPatrons from "patrons.json";
 import type { Patrons, PatreonUser } from "scripts/fetchPatrons";
 
@@ -65,12 +65,15 @@ export const getPatronsFromGithub = async () => {
     });
 
     if (result) {
-      const content = Buffer.from(result.data.content, "base64").toString();
-      const patrons = JSON.parse(content);
-      if (isPatrons(patrons)) {
-        cache.latest.value = patrons;
-        cache.latest.timestamp = now + oneHour;
-        return patrons;
+      // Check if the result is a file (not a directory)
+      if (!Array.isArray(result.data) && 'content' in result.data) {
+        const content = Buffer.from(result.data.content!, "base64").toString();
+        const patrons = JSON.parse(content);
+        if (isPatrons(patrons)) {
+          cache.latest.value = patrons;
+          cache.latest.timestamp = now + oneHour;
+          return patrons;
+        }
       }
     }
   } catch (e) {

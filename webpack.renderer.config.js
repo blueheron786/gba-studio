@@ -4,7 +4,7 @@ const rules = require("./webpack.rules");
 const plugins = require("./webpack.plugins");
 const Path = require("path");
 const ReactRefreshWebpackPlugin = require("@pmmmwh/react-refresh-webpack-plugin");
-const ReactRefreshTypeScript = require("react-refresh-typescript");
+const ReactRefreshTypeScript = require("react-refresh-typescript").default;
 
 const isDevelopment = process.env.NODE_ENV !== "production";
 
@@ -38,9 +38,17 @@ const rendererRules = [
         loader: require.resolve("ts-loader"),
         options: {
           getCustomTransformers: isDevelopment
-            ? () => ({
-                before: [ReactRefreshTypeScript()],
-              })
+            ? () => {
+                try {
+                  const ReactRefreshTypeScript = require("react-refresh-typescript").default;
+                  return {
+                    before: [ReactRefreshTypeScript()],
+                  };
+                } catch (e) {
+                  console.warn("ReactRefreshTypeScript not available:", e.message);
+                  return {};
+                }
+              }
             : undefined,
           transpileOnly: true,
         },

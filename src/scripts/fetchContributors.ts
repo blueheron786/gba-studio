@@ -1,5 +1,5 @@
 /* eslint-disable camelcase */
-import Octokit from "@octokit/rest";
+import { Octokit } from "@octokit/rest";
 import { writeJSON } from "fs-extra";
 
 console.log("Fetching Github Contributors");
@@ -24,7 +24,7 @@ const main = async () => {
         Authorization: `Bearer ${ACCESS_TOKEN}`,
       },
     })
-  ).filter((contributor) => {
+  ).filter((contributor: any) => {
     // Filter out bots
     return !contributor.login.includes("[bot]");
   });

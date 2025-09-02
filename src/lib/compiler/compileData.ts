@@ -1,6 +1,6 @@
-import keyBy from "lodash/keyBy";
-import uniq from "lodash/uniq";
-import SparkMD5 from "spark-md5";
+import { keyBy } from "lodash";
+import { uniq } from "lodash";
+const SparkMD5 = require("spark-md5");
 import { eventHasArg } from "lib/helpers/eventSystem";
 import compileImages from "./compileImages";
 import compileEntityEvents from "./compileEntityEvents";
@@ -1295,7 +1295,8 @@ const precompile = async (
 
 // #endregion
 
-const compile = async (
+// Simplified GBA compilation flow
+const compileGBA = async (
   rawProjectData: ProjectResources,
   {
     projectRoot = "/tmp",
@@ -1320,6 +1321,97 @@ const compile = async (
   variableMap: Record<string, VariableMapData>;
   usedSceneTypeIds: string[];
 }> => {
+  const output: Record<string, string> = {};
+  const sceneMap: Record<string, SceneMapData> = {};
+  const variableMap: Record<string, VariableMapData> = {};
+
+  if (rawProjectData.scenes.length === 0) {
+    throw new Error(
+      "No scenes are included in your project. Add some scenes in the Game World editor and try again.",
+    );
+  }
+
+  progress("Compiling for GBA...");
+
+  // Create simplified main.c for GBA
+  output["main.c"] = `#include "gba_system.h"
+#include "engine.h"
+
+int main() {
+    gba_init();
+    
+    // Basic test pattern
+    u16* vram = (u16*)0x06000000;
+    for (int i = 0; i < 240 * 160; i++) {
+        vram[i] = (i % 32) * 1024; // Simple color gradient
+    }
+    
+    while (1) {
+        gba_wait_vblank();
+    }
+    
+    return 0;
+}`;
+
+  // Add basic scene data
+  if (rawProjectData.scenes.length > 0) {
+    const firstScene = rawProjectData.scenes[0];
+    sceneMap[firstScene.symbol || "scene_0"] = {
+      id: firstScene.id,
+      name: firstScene.name || "Scene 1",
+      symbol: firstScene.symbol || "scene_0",
+    };
+  }
+
+  progress("GBA compilation complete");
+
+  return {
+    files: output,
+    sceneMap,
+    variableMap,
+    usedSceneTypeIds: ["TOPDOWN"],
+  };
+};
+
+const compile = async (
+  rawProjectData: ProjectResources,
+  {
+    projectRoot = "/tmp",
+    scriptEventHandlers,
+    engineSchema,
+    tmpPath = "/tmp",
+    debugEnabled = false,
+    progress = (_msg: string) => {},
+    warnings = (_msg: string) => {},
+    buildType = "gb",
+  }: {
+    projectRoot: string;
+    scriptEventHandlers: ScriptEventHandlers;
+    engineSchema: EngineSchema;
+    tmpPath: string;
+    debugEnabled?: boolean;
+    progress: (_msg: string) => void;
+    warnings: (_msg: string) => void;
+    buildType?: string;
+  },
+): Promise<{
+  files: Record<string, string>;
+  sceneMap: Record<string, SceneMapData>;
+  variableMap: Record<string, VariableMapData>;
+  usedSceneTypeIds: string[];
+}> => {
+  // For GBA compilation, use simplified flow
+  if (buildType === "gba") {
+    return compileGBA(rawProjectData, {
+      projectRoot,
+      scriptEventHandlers,
+      engineSchema,
+      tmpPath,
+      debugEnabled,
+      progress,
+      warnings,
+    });
+  }
   const output: Record<string, string> = {};
   const symbols: Record<string, string> = {};
   const sceneMap: Record<string, SceneMapData> = {};

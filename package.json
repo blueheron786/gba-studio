@@ -1,12 +1,12 @@
 {
-  "name": "gb-studio",
-  "productName": "GB Studio",
+  "name": "gba-studio",
+  "productName": "GBA Studio",
   "homepage": "https://www.gbstudio.dev",
   "bugs": {
     "url": "https://github.com/chrismaltby/gb-studio/issues"
   },
   "version": "4.2.0-alpha0",
-  "description": "Visual retro game maker",
+  "description": "Visual retro game maker for Game Boy Advance",
   "main": ".webpack/main",
   "scripts": {
     "start": "electron-forge start",

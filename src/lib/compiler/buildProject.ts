@@ -6,7 +6,7 @@ import { buildRunner } from "./buildRunner";
 import { EngineSchema } from "lib/project/loadEngineSchema";
 
 type BuildOptions = {
-  buildType: "rom" | "web" | "pocket";
+  buildType: "rom" | "web" | "pocket" | "gba";
   projectRoot: string;
   tmpPath: string;
   engineSchema: EngineSchema;

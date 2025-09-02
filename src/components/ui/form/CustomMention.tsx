@@ -26,7 +26,7 @@ const CustomMention = ({
   id,
   onClick,
 }: CustomMentionProps) => {
-  const styles = useStyles(defaultStyle, { style, className });
+  const styles = useStyles(defaultStyle, { style: style as any, className });
   if (!id) {
     return null;
   }

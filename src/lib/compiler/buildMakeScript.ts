@@ -13,7 +13,7 @@ type BuildOptions = {
   debug: boolean;
   platform: string;
   batteryless: boolean;
-  targetPlatform: "gb" | "pocket";
+  targetPlatform: "gb" | "pocket" | "gba";
   cartType: "mbc3" | "mbc5";
   compilerPreset: number;
 };
@@ -36,10 +36,16 @@ export const getBuildCommands = async (
   const buildFiles = await globAsync(srcRoot);
   const output = [];
 
-  const CC =
-    platform === "win32"
-      ? `..\\_gbstools\\gbdk\\bin\\lcc`
-      : `../_gbstools/gbdk/bin/lcc`;
+  // Check if building for GBA
+  const isGBA = targetPlatform === "gba";
+  
+  const CC = isGBA
+    ? platform === "win32"
+      ? `..\\_gbstools\\devkitarm\\bin\\arm-none-eabi-gcc.exe`
+      : `../_gbstools/devkitarm/bin/arm-none-eabi-gcc`
+    : platform === "win32"
+    ? `..\\_gbstools\\gbdk\\bin\\lcc`
+    : `../_gbstools/gbdk/bin/lcc`;
 
   for (const file of buildFiles) {
     if (musicDriver === "huge" && file.indexOf("GBT_PLAYER") !== -1) {
@@ -54,55 +60,77 @@ export const getBuildCommands = async (
       .replace(/\.[cs]$/, "")}.o`;
 
     if (!(await pathExists(objFile))) {
-      const buildArgs = [
-        `-Iinclude`,
-        `-Wa-Iinclude`,
-        `-Wa-I../_gbstools/gbdk/lib/small/asxxxx`,
-        `-Wl-a`,
-        `-Wf-MMD`,
-        `-c`,
-      ];
-
-      buildArgs.push(`-Wf"--max-allocs-per-node ${compilerPreset ?? 3000}"`);
-
-      if (colorEnabled) {
-        buildArgs.push("-DCGB");
-      }
-
-      if (sgb) {
-        buildArgs.push("-DSGB");
-      }
-
-      if (musicDriver === "huge") {
-        buildArgs.push("-DHUGE_TRACKER");
+      let buildArgs: string[];
+      
+      if (isGBA) {
+        // GBA compilation flags
+        buildArgs = [
+          "-mthumb",
+          "-mthumb-interwork", 
+          "-mcpu=arm7tdmi",
+          "-Wall",
+          "-Wextra",
+          "-O2",
+          "-fomit-frame-pointer",
+          "-Iinclude",
+          "-c"
+        ];
+        
+        if (debug) {
+          buildArgs.push("-g");
+          buildArgs.push("-DDEBUG");
+        }
       } else {
-        buildArgs.push("-DGBT_PLAYER");
-      }
+        // Original GB compilation flags
+        buildArgs = [
+          `-Iinclude`,
+          `-Wa-Iinclude`,
+          `-Wa-I../_gbstools/gbdk/lib/small/asxxxx`,
+          `-Wl-a`,
+          `-Wf-MMD`,
+          `-c`,
+        ];
 
-      if (batteryless) {
-        buildArgs.push("-DBATTERYLESS");
-      }
+        buildArgs.push(`-Wf"--max-allocs-per-node ${compilerPreset ?? 3000}"`);
 
-      const rumbleBit = cartType === "mbc3" ? "0x20u" : "0x08u";
-      buildArgs.push(`-DRUMBLE_ENABLE=${rumbleBit}`);
+        if (colorEnabled) {
+          buildArgs.push("-DCGB");
+        }
 
-      if (debug) {
-        buildArgs.push("-Wf--fverbose-asm");
-        buildArgs.push("-Wf--debug");
-        buildArgs.push("-Wl-m");
-        buildArgs.push("-Wl-w");
-        buildArgs.push("-Wl-y");
-        buildArgs.push("-DVM_DEBUG_OUTPUT");
-        buildArgs.push("-Wf--nolospre");
-        buildArgs.push("-Wf--nogcse");
-      }
+        if (sgb) {
+          buildArgs.push("-DSGB");
+        }
 
-      if (targetPlatform === "pocket") {
-        buildArgs.push("-msm83:ap");
+        if (musicDriver === "huge") {
+          buildArgs.push("-DHUGE_TRACKER");
+        } else {
+          buildArgs.push("-DGBT_PLAYER");
+        }
+
+        if (batteryless) {
+          buildArgs.push("-DBATTERYLESS");
+        }
+
+        const rumbleBit = cartType === "mbc3" ? "0x20u" : "0x08u";
+        buildArgs.push(`-DRUMBLE_ENABLE=${rumbleBit}`);
+
+        if (debug) {
+          buildArgs.push("-Wf--fverbose-asm");
+          buildArgs.push("-Wf--debug");
+          buildArgs.push("-Wl-m");
+          buildArgs.push("-Wl-w");
+          buildArgs.push("-Wl-y");
+          buildArgs.push("-DVM_DEBUG_OUTPUT");
+          buildArgs.push("-Wf--nolospre");
+          buildArgs.push("-Wf--nogcse");
+        }
+
+        if (targetPlatform === "pocket") {
+          buildArgs.push("-msm83:ap");
+        }
       }
 
       buildArgs.push(
-        "-c",
         "-o",
         Path.relative(buildRoot, objFile),
         Path.relative(buildRoot, file),
@@ -153,55 +181,70 @@ export const buildLinkFlags = (
       .toUpperCase()
       .replace(/[^A-Z]*/g, "")
       .substring(0, 15) || "GBSTUDIO";
-  const cart = cartType === "mbc3" ? "0x10" : "0x1E";
-  return ([] as Array<string>).concat(
-    // General
-    [
-      // Cart
-      `-Wm-yt${cart}`,
-      // Banks
-      "-autobank",
-      "-Wb-ext=.rel",
-      "-Wm-yoA",
-      "-Wm-ya4",
-      // Symbols
-      "-Wl-j",
-      "-Wl-m",
-      "-Wl-w",
-      "-Wm-yS",
-      "-Wl-klib",
-      "-Wl-g.STACK=0xDF00",
-      "-Wi-e",
-      `-Wm-yn"${validName}"`,
-    ],
-    // Color
-    colorOnly ? ["-Wm-yC"] : color ? ["-Wm-yc"] : [],
-    // SGB
-    sgb ? ["-Wm-ys"] : [],
-    // Pocket
-    targetPlatform === "pocket" ? ["-msm83:ap"] : [],
-    // Debug emulicious
-    debug ? ["-Wf--debug", "-Wl-m", "-Wl-w", "-Wl-y"] : [],
-    // Music Driver
-    musicDriver === "huge"
-      ? // hugetracker
-        ["-Wl-lhUGEDriver.lib"]
-      : // gbtplayer
-        ["-Wl-lgbt_player.lib", "-Wb-reserve=1:800"],
-    // Batteryless cart
-    batteryless
-      ? [
-          "-Wb-reserve=15:4000",
-          "-Wb-reserve=14:4000",
-          "-Wb-reserve=13:4000",
-          "-Wb-reserve=12:4000",
-          "-Wl-g__start_save=12",
-        ]
-      : ["-Wl-g__start_save=0"],
-    // Output
-    ["-o", `"build/rom/${romFilename}"`],
-    [`-Wl-f${linkFile}`],
-  );
+      
+  if (targetPlatform === "gba") {
+    // GBA linking flags
+    return [
+      "-mthumb",
+      "-mthumb-interwork",
+      "-mcpu=arm7tdmi",
+      "-T", "gba.ld",
+      "-o", `build/rom/${romFilename}`,
+      `-Wl,-Map,build/rom/game.map`,
+      linkFile
+    ];
+  } else {
+    // Original GB linking flags
+    const cart = cartType === "mbc3" ? "0x10" : "0x1E";
+    return ([] as Array<string>).concat(
+      // General
+      [
+        // Cart
+        `-Wm-yt${cart}`,
+        // Banks
+        "-autobank",
+        "-Wb-ext=.rel",
+        "-Wm-yoA",
+        "-Wm-ya4",
+        // Symbols
+        "-Wl-j",
+        "-Wl-m",
+        "-Wl-w",
+        "-Wm-yS",
+        "-Wl-klib",
+        "-Wl-g.STACK=0xDF00",
+        "-Wi-e",
+        `-Wm-yn"${validName}"`,
+      ],
+      // Color
+      colorOnly ? ["-Wm-yC"] : color ? ["-Wm-yc"] : [],
+      // SGB
+      sgb ? ["-Wm-ys"] : [],
+      // Pocket
+      targetPlatform === "pocket" ? ["-msm83:ap"] : [],
+      // Debug emulicious
+      debug ? ["-Wf--debug", "-Wl-m", "-Wl-w", "-Wl-y"] : [],
+      // Music Driver
+      musicDriver === "huge"
+        ? // hugetracker
+          ["-Wl-lhUGEDriver.lib"]
+        : // gbtplayer
+          ["-Wl-lgbt_player.lib", "-Wb-reserve=1:800"],
+      // Batteryless cart
+      batteryless
+        ? [
+            "-Wb-reserve=15:4000",
+            "-Wb-reserve=14:4000",
+            "-Wb-reserve=13:4000",
+            "-Wb-reserve=12:4000",
+            "-Wl-g__start_save=12",
+          ]
+        : ["-Wl-g__start_save=0"],
+      // Output
+      ["-o", `"build/rom/${romFilename}"`],
+      [`-Wl-f${linkFile}`],
+    );
+  }
 };
 
 export const makefileInjectToolsPath = async (

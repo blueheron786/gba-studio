@@ -10,39 +10,39 @@ const buildToolsRoot = Path.join(
 
 const dependencies = {
   "darwin-arm64": {
-    gbdk: {
-      url: "https://github.com/gbdk-2020/gbdk-2020/releases/download/4.4.0/gbdk-macos-arm64.tar.gz",
-      type: "targz",
+    gbadev: {
+      url: "https://github.com/devkitPro/devkitarm-portlibs/releases/download/v1.7.0/devkitARM-r59-osx.tar.xz",
+      type: "tarxz",
     },
   },
   "darwin-x64": {
-    gbdk: {
-      url: "https://github.com/gbdk-2020/gbdk-2020/releases/download/4.4.0/gbdk-macos.tar.gz",
-      type: "targz",
+    gbadev: {
+      url: "https://github.com/devkitPro/devkitarm-portlibs/releases/download/v1.7.0/devkitARM-r59-osx.tar.xz",
+      type: "tarxz",
     },
   },
   "linux-x64": {
-    gbdk: {
-      url: "https://github.com/gbdk-2020/gbdk-2020/releases/download/4.4.0/gbdk-linux64.tar.gz",
-      type: "targz",
+    gbadev: {
+      url: "https://github.com/devkitPro/devkitarm-portlibs/releases/download/v1.7.0/devkitARM-r59-linux.tar.xz",
+      type: "tarxz",
     },
   },
   "linux-arm64": {
-    gbdk: {
-      url: "https://github.com/gbdk-2020/gbdk-2020/releases/download/4.4.0/gbdk-linux-arm64.tar.gz",
-      type: "targz",
+    gbadev: {
+      url: "https://github.com/devkitPro/devkitarm-portlibs/releases/download/v1.7.0/devkitARM-r59-linux.tar.xz",
+      type: "tarxz",
     },
   },
   "win32-ia32": {
-    gbdk: {
-      url: "https://github.com/gbdk-2020/gbdk-2020/releases/download/4.4.0/gbdk-win32.zip",
-      type: "zip",
+    gbadev: {
+      url: "https://github.com/devkitPro/devkitarm-portlibs/releases/download/v1.7.0/devkitARM-r59-win64.tar.xz",
+      type: "tarxz",
     },
   },
   "win32-x64": {
-    gbdk: {
-      url: "https://github.com/gbdk-2020/gbdk-2020/releases/download/4.4.0/gbdk-win64.zip",
-      type: "zip",
+    gbadev: {
+      url: "https://github.com/devkitPro/devkitarm-portlibs/releases/download/v1.7.0/devkitARM-r59-win64.tar.xz",
+      type: "tarxz",
     },
   },
 } as const;
@@ -57,6 +57,16 @@ const fetchArch =
   process.argv
     .find((arg) => arg.startsWith("--arch="))
     ?.replace("--arch=", "") ?? localArch;
+
+const extractTarXz = async (
+  archivePath: string,
+  outputDir: string,
+): Promise<void> => {
+  console.log(`Extract tar.xz to "${outputDir}"`);
+  const res = spawn("tar", ["-Jxf", archivePath, "-C", outputDir], {}, {});
+  await res.completed;
+  console.log("✅ Done");
+};
 
 const extractTarGz = async (
   archivePath: string,
@@ -78,9 +88,9 @@ const extractZip = async (
   console.log("✅ Done");
 };
 
-export const fetchGBDKDependency = async (arch: Arch) => {
-  console.log(`Fetching GBDK for arch=${arch}`);
-  const { url, type } = dependencies[arch].gbdk;
+export const fetchGBADevDependency = async (arch: Arch) => {
+  console.log(`Fetching GBA Dev tools for arch=${arch}`);
+  const { url, type } = dependencies[arch].gbadev;
   console.log(`URL=${url}`);
 
   const response = await fetch(url);
@@ -90,13 +100,15 @@ export const fetchGBDKDependency = async (arch: Arch) => {
   await writeFile(tmpPath, data);
   console.log(`Written to "${tmpPath}"`);
 
-  const gbdkArchPath = Path.join(buildToolsRoot, arch);
-  await ensureDir(gbdkArchPath);
+  const gbadevArchPath = Path.join(buildToolsRoot, arch);
+  await ensureDir(gbadevArchPath);
 
-  if (type === "targz") {
-    await extractTarGz(tmpPath, gbdkArchPath);
+  if (type === "tarxz") {
+    await extractTarXz(tmpPath, gbadevArchPath);
+  } else if (type === "targz") {
+    await extractTarGz(tmpPath, gbadevArchPath);
   } else {
-    await extractZip(tmpPath, gbdkArchPath);
+    await extractZip(tmpPath, gbadevArchPath);
   }
 
   await remove(tmpPath);
@@ -106,7 +118,7 @@ const main = async () => {
   await ensureDir(buildToolsRoot);
   for (const arch of archs) {
     if (fetchAll || arch === fetchArch) {
-      await fetchGBDKDependency(arch);
+      await fetchGBADevDependency(arch);
     }
   }
 };

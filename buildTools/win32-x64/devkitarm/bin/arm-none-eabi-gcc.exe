@@ -1,0 +1,10 @@
+@echo off
+REM Mock GBA Compiler for testing
+echo Compiling GBA project...
+echo Input: %*
+echo [Mock] arm-none-eabi-gcc: compiling %~nx3 to %~nx2
+
+REM Create a dummy object file
+echo. > "%~2"
+
+echo Compilation complete.

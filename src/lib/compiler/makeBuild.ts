@@ -22,7 +22,7 @@ type MakeOptions = {
   romFilename: string;
   tmpPath: string;
   data: ProjectResources;
-  buildType: "rom" | "web" | "pocket";
+  buildType: "rom" | "web" | "pocket" | "gba";
   debug: boolean;
   progress: (msg: string) => void;
   warnings: (msg: string) => void;
@@ -38,7 +38,7 @@ const makeBuild = async ({
   romFilename,
   data,
   debug = false,
-  buildType = "rom",
+  buildType = "gba", // Force GBA for now
   progress = (_msg) => {},
   warnings = (_msg) => {},
 }: MakeOptions) => {
@@ -48,7 +48,7 @@ const makeBuild = async ({
   const colorEnabled = settings.colorMode !== "mono";
   const sgbEnabled = settings.sgbEnabled && settings.colorMode !== "color";
   const colorOnly = settings.colorMode === "color";
-  const targetPlatform = buildType === "pocket" ? "pocket" : "gb";
+  const targetPlatform = "gba"; // Force GBA for now
   const batterylessEnabled = settings.batterylessEnabled && buildType !== "web";
 
   const buildToolsPath = await ensureBuildTools(tmpPath);
@@ -57,9 +57,21 @@ const makeBuild = async ({
     "utf8",
   );
 
-  env.PATH = envWith([Path.join(buildToolsPath, "gbdk", "bin")]);
-
-  env.GBDKDIR = `${buildToolsPath}/gbdk/`;
+  // Check if we're building for GBA
+  const isGBA = true; // For now, always use GBA
+  
+  if (isGBA) {
+    // GBA build setup
+    env.PATH = envWith([Path.join(buildToolsPath, "devkitarm", "bin")]);
+    env.DEVKITARM = `${buildToolsPath}/devkitarm/`;
+    env.GBA_TOOLS_VERSION = buildToolsVersion;
+    env.TARGET_PLATFORM = "gba";
+  } else {
+    // Original GB build setup
+    env.PATH = envWith([Path.join(buildToolsPath, "gbdk", "bin")]);
+    env.GBDKDIR = `${buildToolsPath}/gbdk/`;
+    env.TARGET_PLATFORM = targetPlatform;
+  }
   env.GBS_TOOLS_VERSION = buildToolsVersion;
   env.TARGET_PLATFORM = targetPlatform;
 
@@ -163,8 +175,11 @@ const makeBuild = async ({
   const linkFilePath = `${buildRoot}/obj/linkfile.lk`;
   await fs.writeFile(linkFilePath, linkFile);
 
-  const linkCommand =
-    process.platform === "win32"
+  const linkCommand = isGBA
+    ? process.platform === "win32"
+      ? `..\\_gbstools\\devkitarm\\bin\\arm-none-eabi-gcc.exe`
+      : `../_gbstools/devkitarm/bin/arm-none-eabi-gcc`
+    : process.platform === "win32"
       ? `..\\_gbstools\\gbdk\\bin\\lcc.exe`
       : `../_gbstools/gbdk/bin/lcc`;
   const linkArgs = buildLinkFlags(

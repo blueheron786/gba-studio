@@ -17,7 +17,12 @@ export const checksumMD5File = (path: string): Promise<string> => {
     const spark = new SparkMD5.ArrayBuffer();
     const stream = createReadStream(path);
     stream.on("error", (err) => reject(err));
-    stream.on("data", (chunk: ArrayBuffer) => spark.append(chunk));
+    stream.on("data", (chunk: string | Buffer) => {
+      if (chunk instanceof Buffer) {
+        const arrayBuffer = chunk.buffer.slice(chunk.byteOffset, chunk.byteOffset + chunk.byteLength) as ArrayBuffer;
+        spark.append(arrayBuffer);
+      }
+    });
     stream.on("end", () => resolve(spark.end()));
   });
 };

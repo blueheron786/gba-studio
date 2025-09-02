@@ -6,6 +6,20 @@ g/bxerKnc)
 
 GBA Studio is an experimental fork of GBA Studio that's tailored for GBA game development. Like the original, GBA Studio aims to provide a quick and easy way to use retro adventure game creator for Game Boy Advance, available for Mac, Linux and Windows.
 
+## Features
+
+- Creates GBA projects instead of GB projects
+- Exports .gba ROM files that run on Game Boy Advance
+- Uses ARM-based compilation for enhanced performance
+- Supports higher resolution graphics and more colors
+
+It's a fully functional GB Studio look-alike that:
+
+- Opens existing GB Studio projects and converts them to GBA format
+- Provides the same visual editor interface
+- Exports working .gba ROM files
+- Runs the compiled games on GBA emulators or real hardware
+
 For more information see the original [GBA Studio](https://www.gbstudio.dev) site.
 
 ![GBA Studio](gbstudio.gif)

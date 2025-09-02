@@ -1798,7 +1798,7 @@ ipcMain.handle("music:play-uge", async (_event, assetPath: string) => {
   // Check project has permission to access this asset
   guardAssetWithinProject(filename, projectRoot);
   const fileData = toArrayBuffer(await readFile(filename));
-  const data = loadUGESong(fileData);
+  const data = loadUGESong(fileData as ArrayBuffer);
   if (!data) {
     console.error(`No data in song "${filename}"`);
     return;

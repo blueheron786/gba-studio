@@ -8,7 +8,7 @@ import { validateEjectedBuild } from "./validate/validateEjectedBuild";
 import makeBuild, { cancelBuildCommandsInProgress } from "./makeBuild";
 import { EngineSchema } from "lib/project/loadEngineSchema";
 
-export type BuildType = "rom" | "web" | "pocket";
+export type BuildType = "rom" | "web" | "pocket" | "gba";
 
 export type BuildWorkerData = {
   project: ProjectResources;
