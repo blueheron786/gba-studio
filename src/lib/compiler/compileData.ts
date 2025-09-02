@@ -1332,6 +1332,7 @@ const compileGBA = async (
   }
 
   progress("Compiling for GBA...");
+  console.log("[GBA COMPILE] Starting GBA compilation");
 
   // Create simplified main.c for GBA
   output["main.c"] = `#include "gba_system.h"
@@ -1473,6 +1474,7 @@ const compile = async (
 }> => {
   // For GBA compilation, use simplified flow
   if (buildType === "gba") {
+    console.log("[COMPILE DEBUG] Taking GBA compilation path");
     return compileGBA(rawProjectData, {
       projectRoot,
       scriptEventHandlers,
@@ -1483,6 +1485,8 @@ const compile = async (
       warnings,
     });
   }
+  
+  console.log("[COMPILE DEBUG] Taking Game Boy compilation path");
   const output: Record<string, string> = {};
   const symbols: Record<string, string> = {};
   const sceneMap: Record<string, SceneMapData> = {};
