@@ -1426,6 +1426,7 @@ ipcMain.handle(
         outputRoot,
         romFilename,
         tmpPath: getTmp(),
+        buildType,
         debugEnabled: debuggerEnabled,
         progress,
         warnings,

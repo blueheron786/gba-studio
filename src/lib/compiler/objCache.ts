@@ -78,8 +78,11 @@ const generateIncludesLookup = async (buildIncludeRoot: string) => {
   return includesLookup;
 };
 
-const generateGameGlobalsLookup = (gameGlobalsContents: string) => {
+const generateGameGlobalsLookup = (gameGlobalsContents: string | undefined) => {
   const lookup: GameGlobalsLookup = {};
+  if (!gameGlobalsContents) {
+    return lookup;
+  }
   const globalMatches = [
     ...gameGlobalsContents.matchAll(/([A-Za-z_0-9]+)[\s]*=[\s]*([0-9]+)/g),
   ];
