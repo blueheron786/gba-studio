@@ -192,14 +192,18 @@ export const buildLinkFlags = (
       
   if (targetPlatform === "gba") {
     // GBA linking flags
+    // The object files from linkFile should be split and passed as individual arguments
+    const fs = require('fs');
+    const objFiles = fs.readFileSync(linkFile, 'utf8').split('\n').filter((f: string) => f.trim());
+    
     return [
       "-mthumb",
-      "-mthumb-interwork",
+      "-mthumb-interwork", 
       "-mcpu=arm7tdmi",
-      "-T", "gba.ld",
-      "-o", `build/rom/${romFilename}`,
-      `-Wl,-Map,build/rom/game.map`,
-      linkFile
+      "-T", "../gba.ld",  // Relative path from build/rom/ to build/ where gba.ld should be
+      "-o", `${romFilename}`,
+      `-Wl,-Map,game.map`,
+      ...objFiles  // Spread the object files as individual arguments
     ];
   } else {
     // Original GB linking flags

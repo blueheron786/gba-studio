@@ -9,9 +9,13 @@ const rmdir = promisify(rimraf);
 const ejectEngineToDir = async (ejectPath: string) => {
   const engineSrcPath = `${defaultEngineRoot}/src`;
   const engineIncludePath = `${defaultEngineRoot}/include`;
+  const engineGBALinkerPath = `${defaultEngineRoot}/gba.ld`;
+  const engineMakefilePath = `${defaultEngineRoot}/Makefile`;
   const ejectSrcPath = `${ejectPath}/src`;
   const ejectIncludePath = `${ejectPath}/include`;
   const ejectMetaPath = `${ejectPath}/engine.json`;
+  const ejectGBALinkerPath = `${ejectPath}/gba.ld`;
+  const ejectMakefilePath = `${ejectPath}/Makefile`;
 
   await rmdir(ejectPath);
 
@@ -23,6 +27,14 @@ const ejectEngineToDir = async (ejectPath: string) => {
   await copy(engineIncludePath, ejectIncludePath);
   console.log("COPY", { defaultEngineMetaPath, ejectMetaPath });
   await copy(defaultEngineMetaPath, ejectMetaPath);
+  
+  // Copy GBA-specific files
+  if (await fs.pathExists(engineGBALinkerPath)) {
+    await copy(engineGBALinkerPath, ejectGBALinkerPath);
+  }
+  if (await fs.pathExists(engineMakefilePath)) {
+    await copy(engineMakefilePath, ejectMakefilePath);
+  }
 };
 
 export default ejectEngineToDir;

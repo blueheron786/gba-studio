@@ -176,9 +176,21 @@ const makeBuild = async ({
   }
 
   progress(`${l10n("COMPILER_LINKING")}...`);
-  const linkFile = await buildLinkFile(buildRoot);
-  const linkFilePath = `${buildRoot}/obj/linkfile.lk`;
-  await fs.writeFile(linkFilePath, linkFile);
+  
+  let linkFilePath: string;
+  let linkFile: string;
+  
+  if (isGBA) {
+    // For GBA builds, we need to pass object files directly and use the GBA linker script
+    linkFile = await buildLinkFile(buildRoot);
+    linkFilePath = `${buildRoot}/obj/linkfile.lk`;
+    await fs.writeFile(linkFilePath, linkFile);
+  } else {
+    // For Game Boy builds, use the traditional link file approach
+    linkFile = await buildLinkFile(buildRoot);
+    linkFilePath = `${buildRoot}/obj/linkfile.lk`;
+    await fs.writeFile(linkFilePath, linkFile);
+  }
 
   let linkCommand: string;
   if (isGBA) {
