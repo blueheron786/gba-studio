@@ -1334,6 +1334,63 @@ const compileGBA = async (
   progress("Compiling for GBA...");
   console.log("[GBA COMPILE] Starting GBA compilation");
 
+  // Create GBA header files
+  output["gba_types.h"] = `#ifndef GBA_TYPES_H
+#define GBA_TYPES_H
+
+// GBA type definitions
+typedef unsigned char u8;
+typedef unsigned short u16;
+typedef unsigned int u32;
+typedef signed char s8;
+typedef signed short s16;
+typedef signed int s32;
+
+// GBA-specific constants
+#define VRAM_BASE 0x06000000
+#define MODE_0 0x0000
+#define MODE_3 0x0003
+#define BG2_ENABLE 0x0400
+
+// Display registers
+#define REG_DISPCNT *(volatile u16*)0x04000000
+
+#endif // GBA_TYPES_H`;
+
+  output["gba_system.h"] = `#ifndef GBA_SYSTEM_H
+#define GBA_SYSTEM_H
+
+#include "gba_types.h"
+
+// GBA system functions
+void gba_init(void);
+void gba_wait_vblank(void);
+
+#endif // GBA_SYSTEM_H`;
+
+  output["engine.h"] = `#ifndef ENGINE_H
+#define ENGINE_H
+
+#include "gba_types.h"
+#include "gba_system.h"
+
+// Engine-specific definitions can go here
+
+#endif // ENGINE_H`;
+
+  output["gba_system.c"] = `#include "gba_system.h"
+
+void gba_init(void) {
+    // Initialize GBA systems
+    REG_DISPCNT = MODE_3 | BG2_ENABLE;
+}
+
+void gba_wait_vblank(void) {
+    // Wait for vertical blank
+    while ((*(volatile u16*)0x04000006) >= 160);
+    while ((*(volatile u16*)0x04000006) < 160);
+}`;
+
   // Create simplified main.c for GBA
   output["main.c"] = `#include "gba_system.h"
 #include "engine.h"
