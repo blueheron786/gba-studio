@@ -16,12 +16,17 @@ export const validateEjectedBuild = async ({
   warnings = (_msg) => {},
 }: ValidateOptions) => {
   progress(`${l10n("COMPILING_VALIDATING_BUILD_FILES")}...`);
+  
+  console.log(`[VALIDATE DEBUG] buildType: ${buildType}`);
 
   // Skip VM validation for GBA builds as they don't use the GBVM system
   if (buildType === "gba") {
     progress("Skipping VM validation for GBA build");
+    console.log("[VALIDATE DEBUG] Skipping VM validation for GBA");
     return;
   }
+  
+  console.log("[VALIDATE DEBUG] Performing VM validation for Game Boy build");
 
   const vmIncludePath = Path.join(buildRoot, "include/vm.h");
   const gameGlobalsPath = Path.join(buildRoot, "include/data/game_globals.i");
