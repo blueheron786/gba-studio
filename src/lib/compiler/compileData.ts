@@ -1334,63 +1334,6 @@ const compileGBA = async (
   progress("Compiling for GBA...");
   console.log("[GBA COMPILE] Starting GBA compilation");
 
-  // Create GBA header files
-  output["gba_types.h"] = `#ifndef GBA_TYPES_H
-#define GBA_TYPES_H
-
-// GBA type definitions
-typedef unsigned char u8;
-typedef unsigned short u16;
-typedef unsigned int u32;
-typedef signed char s8;
-typedef signed short s16;
-typedef signed int s32;
-
-// GBA-specific constants
-#define VRAM_BASE 0x06000000
-#define MODE_0 0x0000
-#define MODE_3 0x0003
-#define BG2_ENABLE 0x0400
-
-// Display registers
-#define REG_DISPCNT *(volatile u16*)0x04000000
-
-#endif // GBA_TYPES_H`;
-
-  output["gba_system.h"] = `#ifndef GBA_SYSTEM_H
-#define GBA_SYSTEM_H
-
-#include "gba_types.h"
-
-// GBA system functions
-void gba_init(void);
-void gba_wait_vblank(void);
-
-#endif // GBA_SYSTEM_H`;
-
-  output["engine.h"] = `#ifndef ENGINE_H
-#define ENGINE_H
-
-#include "gba_types.h"
-#include "gba_system.h"
-
-// Engine-specific definitions can go here
-
-#endif // ENGINE_H`;
-
-  output["gba_system.c"] = `#include "gba_system.h"
-
-void gba_init(void) {
-    // Initialize GBA systems
-    REG_DISPCNT = MODE_3 | BG2_ENABLE;
-}
-
-void gba_wait_vblank(void) {
-    // Wait for vertical blank
-    while ((*(volatile u16*)0x04000006) >= 160);
-    while ((*(volatile u16*)0x04000006) < 160);
-}`;
-
   // Create simplified main.c for GBA
   output["main.c"] = `#include "gba_system.h"
 #include "engine.h"
@@ -1399,58 +1342,58 @@ int main() {
     gba_init();
     
     // Basic test pattern
-    u16* vram = (u16*)0x06000000;
+    uint16_t* vram = MEM_VRAM;
     for (int i = 0; i < 240 * 160; i++) {
         vram[i] = (i % 32) * 1024; // Simple color gradient
     }
     
     while (1) {
-        gba_wait_vblank();
+        wait_vblank();
     }
     
     return 0;
 }`;
 
-  // Generate basic data files for GBA (using GBA-compatible includes)
+  // Generate basic data files for GBA (using standard C types)
   output["bg_placeholder.c"] = `#include "gba_types.h"
 
-const u16 bg_placeholder_data[] = {
+const uint16_t bg_placeholder_data[] = {
     0x0000  // Basic placeholder data
 };`;
 
   output["bg_placeholder_tileset.c"] = `#include "gba_types.h"
 
-const u16 bg_placeholder_tileset[] = {
+const uint16_t bg_placeholder_tileset[] = {
     0x0000  // Basic tileset data
 };`;
 
   output["bg_placeholder_tilemap.c"] = `#include "gba_types.h"
 
-const u16 bg_placeholder_tilemap[] = {
+const uint16_t bg_placeholder_tilemap[] = {
     0x0000  // Basic tilemap data
 };`;
 
   output["bg_placeholder_tilemap_attr.c"] = `#include "gba_types.h"
 
-const u16 bg_placeholder_tilemap_attr[] = {
+const uint16_t bg_placeholder_tilemap_attr[] = {
     0x0000  // Basic tilemap attributes
 };`;
 
   output["cursor_image.c"] = `#include "gba_types.h"
 
-const u16 cursor_image_data[] = {
+const uint16_t cursor_image_data[] = {
     0x0000  // Basic cursor data
 };`;
 
   output["font_gbs_mono.c"] = `#include "gba_types.h"
 
-const u16 font_gbs_mono_data[] = {
+const uint16_t font_gbs_mono_data[] = {
     0x0000  // Basic font data
 };`;
 
   output["frame_image.c"] = `#include "gba_types.h"
 
-const u16 frame_image_data[] = {
+const uint16_t frame_image_data[] = {
     0x0000  // Basic frame data
 };`;
 
@@ -1460,25 +1403,25 @@ const char game_signature[] = "GBA STUDIO TEST";`;
 
   output["palette_0.c"] = `#include "gba_types.h"
 
-const u16 palette_0_data[] = {
+const uint16_t palette_0_data[] = {
     0x0000, 0x7FFF, 0x001F, 0x03E0  // Basic 4-color palette
 };`;
 
   output["palette_1.c"] = `#include "gba_types.h"
 
-const u16 palette_1_data[] = {
+const uint16_t palette_1_data[] = {
     0x0000, 0x7C00, 0x03E0, 0x001F  // Basic 4-color palette
 };`;
 
   output["scene_1_actors.c"] = `#include "gba_types.h"
 
-const u16 scene_1_actors_data[] = {
+const uint16_t scene_1_actors_data[] = {
     0x0000  // Basic actors data
 };`;
 
   output["scene_1_collisions.c"] = `#include "gba_types.h"
 
-const u8 scene_1_collisions[] = {
+const uint8_t scene_1_collisions[] = {
     0x00  // Basic collision data
 };`;
 
