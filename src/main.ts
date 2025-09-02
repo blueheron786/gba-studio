@@ -359,7 +359,7 @@ export const createProjectWindow = async () => {
 
   projectWindow.on("page-title-updated", (e, title) => {
     documentName = title
-      .replace(/^GB Studio -/, "")
+      .replace(/^GBA Studio -/, "")
       .replace(/\(modified\)$/, "")
       .trim();
   });
@@ -786,13 +786,13 @@ app.on("ready", async () => {
       guardAssetWithinProject(filename, projectRoot);
       return callback({ path: filename });
     } else if (host === "app-assets") {
-      // Load an asset from the GB Studio global assets folder
+      // Load an asset from the GBA Studio global assets folder
       const filename = Path.join(assetsRoot, decodeURI(pathname));
       // Check project has permission to access this asset
       guardAssetWithinProject(filename, assetsRoot);
       return callback({ path: filename });
     } else if (host === "global-plugin") {
-      // Load an asset from the GB Studio global plugins folder
+      // Load an asset from the GBA Studio global plugins folder
       const globalPluginsPath = getGlobalPluginsPath();
       const filename = Path.join(globalPluginsPath, decodeURI(pathname));
       // Check has permission to access this asset

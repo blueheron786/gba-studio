@@ -405,7 +405,7 @@ const Splash = () => {
       {openCredits && (
         <FocusLock>
           <Credits onClose={() => setOpenCredits(false)}>
-            <CreditsTitle>GB Studio</CreditsTitle>
+            <CreditsTitle>GBA Studio</CreditsTitle>
             <CreditsSubHeading>{l10n("SPLASH_CONTRIBUTORS")}</CreditsSubHeading>
             {goldContributors.map((contributor) => (
               <CreditsPerson

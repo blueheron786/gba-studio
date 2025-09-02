@@ -45,8 +45,8 @@ module.exports = async () => {
       },
     ],
     packagerConfig: {
-      name: "GB Studio",
-      executableName: "gb-studio",
+      name: "GBA Studio",
+      executableName: "gba-studio",
       packageManager: "yarn",
       icon: "src/assets/app/icon/app_icon",
       darwinDarkModeSupport: true,

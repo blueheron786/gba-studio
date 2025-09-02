@@ -8,6 +8,7 @@ import {
 } from "./buildMakeScript";
 import { cacheObjData, fetchCachedObjData } from "./objCache";
 import ensureBuildTools from "./ensureBuildTools";
+import { getDevKitProPaths, validateDevKitPro } from "lib/helpers/devkitpro";
 import spawn, { ChildProcess } from "lib/helpers/cli/spawn";
 import l10n from "shared/lib/lang/l10n";
 import { ProjectResources } from "shared/lib/resources/types";
@@ -61,9 +62,13 @@ const makeBuild = async ({
   const isGBA = true; // For now, always use GBA
   
   if (isGBA) {
-    // GBA build setup
-    env.PATH = envWith([Path.join(buildToolsPath, "devkitarm", "bin")]);
-    env.DEVKITARM = `${buildToolsPath}/devkitarm/`;
+    // GBA build setup - use system devkitPro
+    validateDevKitPro();
+    const devkitPaths = getDevKitProPaths();
+    
+    env.PATH = envWith([Path.join(devkitPaths.devkitArm, "bin")]);
+    env.DEVKITPRO = devkitPaths.devkitPro;
+    env.DEVKITARM = devkitPaths.devkitArm;
     env.GBA_TOOLS_VERSION = buildToolsVersion;
     env.TARGET_PLATFORM = "gba";
   } else {
@@ -175,13 +180,15 @@ const makeBuild = async ({
   const linkFilePath = `${buildRoot}/obj/linkfile.lk`;
   await fs.writeFile(linkFilePath, linkFile);
 
-  const linkCommand = isGBA
-    ? process.platform === "win32"
-      ? `..\\_gbstools\\devkitarm\\bin\\arm-none-eabi-gcc.exe`
-      : `../_gbstools/devkitarm/bin/arm-none-eabi-gcc`
-    : process.platform === "win32"
+  let linkCommand: string;
+  if (isGBA) {
+    const devkitPaths = getDevKitProPaths();
+    linkCommand = devkitPaths.gccPath;
+  } else {
+    linkCommand = process.platform === "win32"
       ? `..\\_gbstools\\gbdk\\bin\\lcc.exe`
       : `../_gbstools/gbdk/bin/lcc`;
+  }
   const linkArgs = buildLinkFlags(
     linkFilePath,
     romFilename,

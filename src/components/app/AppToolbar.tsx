@@ -205,7 +205,7 @@ const AppToolbar: FC = () => {
   }
 
   useEffect(() => {
-    document.title = `GB Studio - ${appTitle}`;
+    document.title = `GBA Studio - ${appTitle}`;
   }, [appTitle]);
 
   if (!loaded) {

@@ -1,0 +1,86 @@
+{
+  "version": "4.2.0-gba",
+  "fields": [
+    {
+      "key": "INPUT_PLATFORM_INTERACT",
+      "sceneType": "PLATFORM",
+      "label": "FIELD_INPUT_INTERACT",
+      "description": "FIELD_INPUT_INTERACT_DESC",
+      "group": "GAMETYPE_PLATFORMER",
+      "type": "togglebuttons",
+      "options": [
+        ["INPUT_A", "A"],
+        ["INPUT_B", "B"],
+        ["INPUT_UP", "FIELD_DIRECTION_UP"],
+        ["INPUT_DOWN", "FIELD_DIRECTION_DOWN"]
+      ],
+      "cType": "define",
+      "defaultValue": "INPUT_A"
+    },
+    {
+      "key": "INPUT_PLATFORM_JUMP",
+      "sceneType": "PLATFORM",
+      "label": "FIELD_INPUT_JUMP",
+      "description": "FIELD_INPUT_JUMP_DESC",
+      "group": "GAMETYPE_PLATFORMER",
+      "type": "togglebuttons",
+      "options": [
+        ["INPUT_A", "A"],
+        ["INPUT_B", "B"],
+        ["INPUT_UP", "FIELD_DIRECTION_UP"],
+        ["INPUT_DOWN", "FIELD_DIRECTION_DOWN"]
+      ],
+      "cType": "define",
+      "defaultValue": "INPUT_A"
+    },
+    {
+      "key": "INPUT_PLATFORM_RUN",
+      "sceneType": "PLATFORM",
+      "label": "FIELD_INPUT_RUN",
+      "description": "FIELD_INPUT_RUN_DESC",
+      "group": "GAMETYPE_PLATFORMER",
+      "type": "togglebuttons",
+      "options": [
+        ["INPUT_A", "A"],
+        ["INPUT_B", "B"],
+        ["INPUT_UP", "FIELD_DIRECTION_UP"],
+        ["INPUT_DOWN", "FIELD_DIRECTION_DOWN"]
+      ],
+      "cType": "define",
+      "defaultValue": "INPUT_B"
+    }
+  ],
+  "sceneTypes": [
+    {
+      "key": "TOPDOWN",
+      "label": "TOPDOWN"
+    },
+    {
+      "key": "PLATFORM",
+      "label": "PLATFORM"
+    },
+    {
+      "key": "ADVENTURE",
+      "label": "ADVENTURE"
+    },
+    {
+      "key": "SHMUP",
+      "label": "SHMUP"
+    },
+    {
+      "key": "POINTNCLICK",
+      "label": "POINTNCLICK"
+    },
+    {
+      "key": "LOGO",
+      "label": "LOGO"
+    }
+  ],
+  "consts": {
+    "SCREEN_WIDTH": 240,
+    "SCREEN_HEIGHT": 160,
+    "SCREEN_WIDTH_PIXELS": 240,
+    "SCREEN_HEIGHT_PIXELS": 160,
+    "TARGET_PLATFORM": "gba"
+  }
+}

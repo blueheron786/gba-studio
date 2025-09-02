@@ -12,7 +12,7 @@
       <key>CFBundleTypeIconFile</key>
       <string>gbsproj.icns</string>
       <key>CFBundleTypeName</key>
-      <string>GB Studio Project</string>
+      <string>GBA Studio Project</string>
       <key>CFBundleTypeRole</key>
       <string>Editor</string>
     </dict>

@@ -3,6 +3,7 @@ import { promisify } from "util";
 import { pathExists, readFile, writeFile } from "fs-extra";
 import Path from "path";
 import l10n from "shared/lib/lang/l10n";
+import { getDevKitProPaths } from "lib/helpers/devkitpro";
 
 const globAsync = promisify(glob);
 
@@ -39,13 +40,20 @@ export const getBuildCommands = async (
   // Check if building for GBA
   const isGBA = targetPlatform === "gba";
   
-  const CC = isGBA
-    ? platform === "win32"
-      ? `..\\_gbstools\\devkitarm\\bin\\arm-none-eabi-gcc.exe`
-      : `../_gbstools/devkitarm/bin/arm-none-eabi-gcc`
-    : platform === "win32"
-    ? `..\\_gbstools\\gbdk\\bin\\lcc`
-    : `../_gbstools/gbdk/bin/lcc`;
+  let CC: string;
+  if (isGBA) {
+    // Use system devkitPro
+    const devkitPaths = getDevKitProPaths();
+    if (!devkitPaths.isValid) {
+      throw new Error("devkitPro not found! Please install devkitPro and ensure DEVKITPRO/DEVKITARM environment variables are set.");
+    }
+    CC = devkitPaths.gccPath;
+  } else {
+    // Original GB build
+    CC = platform === "win32"
+      ? `..\\_gbstools\\gbdk\\bin\\lcc`
+      : `../_gbstools/gbdk/bin/lcc`;
+  }
 
   for (const file of buildFiles) {
     if (musicDriver === "huge" && file.indexOf("GBT_PLAYER") !== -1) {

@@ -38,7 +38,7 @@
     "knip": "knip"
   },
   "keywords": [],
-  "author": "GB Studio",
+  "author": "GBA Studio",
   "license": "MIT",
   "config": {
     "forge": "./forge.config.js"
