@@ -45,6 +45,7 @@ import type { ProjectExportType } from "store/features/buildGame/buildGameAction
 import {
   assetsRoot,
   buildUUID,
+  defaultEngineRoot,
   EMULATOR_MUTED_SETTING_KEY,
   LOCALE_SETTING_KEY,
   projectTemplatesRoot,
@@ -1375,7 +1376,12 @@ ipcMain.handle(
 ipcMain.handle(
   "project:build",
   async (event, project: ProjectResources, options: BuildOptions) => {
-    const { exportBuild, buildType } = options;
+    const { exportBuild } = options;
+    
+    // Determine build type based on engine - if using GBA engine, build for GBA
+    const isGBAEngine = defaultEngineRoot.includes("gbavm");
+    const buildType = isGBAEngine ? "gba" : options.buildType;
+    
     const buildStartTime = Date.now();
     const projectRoot = Path.dirname(projectPath);
     const outputRoot = Path.normalize(`${getTmp()}/${buildUUID}`);
@@ -1573,18 +1579,22 @@ ipcMain.handle(
 
       const colorOnly = project.settings.colorMode === "color";
 
+      // Determine build type based on engine - if using GBA engine, build for GBA
+      const isGBAEngine = defaultEngineRoot.includes("gbavm");
+      const buildTypeForExport = isGBAEngine ? "gba" : "rom";
+
       const romFilename = getROMFilename(
         project.settings.romFilename,
         project.metadata.name,
         colorOnly,
-        "rom",
+        buildTypeForExport,
       );
       await buildProject(project, {
         projectRoot,
         outputRoot,
         romFilename,
         tmpPath: getTmp(),
-        buildType: "rom",
+        buildType: buildTypeForExport,
         engineSchema,
         debugEnabled: false,
         make: false,
