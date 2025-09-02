@@ -234,6 +234,29 @@ const makeBuild = async ({
   await linkCompleted;
   childSet.delete(child);
 
+  // Fix GBA ROM header (GBA only)
+  if (isGBA) {
+    progress("Fixing GBA ROM header...");
+    const devkitPaths = getDevKitProPaths();
+    const romPath = `${buildRoot}/build/rom/${romFilename}`;
+    
+    if (devkitPaths.gbafixPath) {
+      const { completed: gbafixCompleted, child: gbafixChild } = spawn(
+        devkitPaths.gbafixPath,
+        [romPath],
+        options,
+        {
+          onLog: (msg) => progress(msg),
+          onError: (msg) => warnings(msg),
+        },
+      );
+      
+      childSet.add(gbafixChild);
+      await gbafixCompleted;
+      childSet.delete(gbafixChild);
+    }
+  }
+
   // Export game globals to ROM directory (Game Boy only)
   if (targetPlatform !== "gba") {
     const gameGlobalsPath = `${buildRoot}/include/data/game_globals.i`;

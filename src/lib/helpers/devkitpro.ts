@@ -5,6 +5,7 @@ export interface DevKitProPaths {
   devkitPro: string;
   devkitArm: string;
   gccPath: string;
+  gbafixPath: string;
   isValid: boolean;
 }
 
@@ -15,12 +16,14 @@ export function getDevKitProPaths(): DevKitProPaths {
   
   if (devkitPro && devkitArm) {
     const gccPath = join(devkitArm, "bin", process.platform === "win32" ? "arm-none-eabi-gcc.exe" : "arm-none-eabi-gcc");
+    const gbafixPath = join(devkitPro, "tools", "bin", process.platform === "win32" ? "gbafix.exe" : "gbafix");
     
     if (existsSync(gccPath)) {
       return {
         devkitPro,
         devkitArm,
         gccPath,
+        gbafixPath,
         isValid: true
       };
     }
@@ -42,22 +45,25 @@ export function getDevKitProPaths(): DevKitProPaths {
   for (const basePath of commonPaths) {
     const armPath = join(basePath, "devkitARM");
     const gccPath = join(armPath, "bin", process.platform === "win32" ? "arm-none-eabi-gcc.exe" : "arm-none-eabi-gcc");
+    const gbafixPath = join(basePath, "tools", "bin", process.platform === "win32" ? "gbafix.exe" : "gbafix");
     
     if (existsSync(gccPath)) {
       return {
         devkitPro: basePath,
         devkitArm: armPath,
         gccPath,
+        gbafixPath,
         isValid: true
       };
     }
   }
-  
+
   // Return invalid state
   return {
     devkitPro: "",
     devkitArm: "",
     gccPath: "",
+    gbafixPath: "",
     isValid: false
   };
 }
