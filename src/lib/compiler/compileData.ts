@@ -1353,6 +1353,77 @@ int main() {
     return 0;
 }`;
 
+  // Generate basic data files for GBA (using GBA-compatible includes)
+  output["bg_placeholder.c"] = `#include "gba_types.h"
+
+const u16 bg_placeholder_data[] = {
+    0x0000  // Basic placeholder data
+};`;
+
+  output["bg_placeholder_tileset.c"] = `#include "gba_types.h"
+
+const u16 bg_placeholder_tileset[] = {
+    0x0000  // Basic tileset data
+};`;
+
+  output["bg_placeholder_tilemap.c"] = `#include "gba_types.h"
+
+const u16 bg_placeholder_tilemap[] = {
+    0x0000  // Basic tilemap data
+};`;
+
+  output["bg_placeholder_tilemap_attr.c"] = `#include "gba_types.h"
+
+const u16 bg_placeholder_tilemap_attr[] = {
+    0x0000  // Basic tilemap attributes
+};`;
+
+  output["cursor_image.c"] = `#include "gba_types.h"
+
+const u16 cursor_image_data[] = {
+    0x0000  // Basic cursor data
+};`;
+
+  output["font_gbs_mono.c"] = `#include "gba_types.h"
+
+const u16 font_gbs_mono_data[] = {
+    0x0000  // Basic font data
+};`;
+
+  output["frame_image.c"] = `#include "gba_types.h"
+
+const u16 frame_image_data[] = {
+    0x0000  // Basic frame data
+};`;
+
+  output["game_signature.c"] = `#include "gba_types.h"
+
+const char game_signature[] = "GBA STUDIO TEST";`;
+
+  output["palette_0.c"] = `#include "gba_types.h"
+
+const u16 palette_0_data[] = {
+    0x0000, 0x7FFF, 0x001F, 0x03E0  // Basic 4-color palette
+};`;
+
+  output["palette_1.c"] = `#include "gba_types.h"
+
+const u16 palette_1_data[] = {
+    0x0000, 0x7C00, 0x03E0, 0x001F  // Basic 4-color palette
+};`;
+
+  output["scene_1_actors.c"] = `#include "gba_types.h"
+
+const u16 scene_1_actors_data[] = {
+    0x0000  // Basic actors data
+};`;
+
+  output["scene_1_collisions.c"] = `#include "gba_types.h"
+
+const u8 scene_1_collisions[] = {
+    0x00  // Basic collision data
+};`;
+
   // Add basic scene data
   if (rawProjectData.scenes.length > 0) {
     const firstScene = rawProjectData.scenes[0];

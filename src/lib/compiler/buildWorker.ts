@@ -70,6 +70,7 @@ const buildProject = async ({
     scriptEventHandlers,
     tmpPath,
     debugEnabled,
+    buildType,
     progress,
     warnings,
   });
