@@ -1378,9 +1378,14 @@ ipcMain.handle(
   async (event, project: ProjectResources, options: BuildOptions) => {
     const { exportBuild } = options;
     
-    // Determine build type based on engine - if using GBA engine, build for GBA
+    // Force GBA build type for GBA Studio (fallback in case UI doesn't pass "gba")
     const isGBAEngine = defaultEngineRoot.includes("gbavm");
-    const buildType = isGBAEngine ? "gba" : options.buildType;
+    const buildType = isGBAEngine && options.buildType !== "gba" ? "gba" : options.buildType;
+    
+    console.log(`[BUILD DEBUG] defaultEngineRoot: ${defaultEngineRoot}`);
+    console.log(`[BUILD DEBUG] isGBAEngine: ${isGBAEngine}`);
+    console.log(`[BUILD DEBUG] original buildType: ${options.buildType}`);
+    console.log(`[BUILD DEBUG] final buildType: ${buildType}`);
     
     const buildStartTime = Date.now();
     const projectRoot = Path.dirname(projectPath);
