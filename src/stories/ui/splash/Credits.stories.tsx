@@ -46,16 +46,6 @@ export const Default: Story = {
         <CreditsPerson>Person Seven</CreditsPerson>
         <CreditsPerson>Person Eight</CreditsPerson>
       </CreditsGrid>
-      <CreditsSubHeading>Patrons</CreditsSubHeading>
-      <CreditsGrid>
-        <CreditsPerson gold>Patron One</CreditsPerson>
-        <CreditsPerson gold>Patron Two</CreditsPerson>
-      </CreditsGrid>
-      <CreditsGrid>
-        <CreditsPerson>Patron Three</CreditsPerson>
-        <CreditsPerson>Patron Four</CreditsPerson>
-        <CreditsPerson>Patron Five</CreditsPerson>
-      </CreditsGrid>
     </Credits>
   ),
 };

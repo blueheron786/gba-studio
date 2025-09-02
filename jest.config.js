@@ -28,6 +28,5 @@ module.exports = {
     "^ui(.*)$": "<rootDir>/src/components/ui/$1",
     "^renderer(.*)$": "<rootDir>/src/renderer/$1",
     "^shared(.*)$": "<rootDir>/src/shared/$1",
-    "patrons.json": "<rootDir>/patrons.json",
   },
 };

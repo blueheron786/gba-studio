@@ -33,7 +33,6 @@
     "repl": "ts-node",
     "fetch-deps": "git submodule update --init --recursive && ts-node src/scripts/fetchDependencies.ts",
     "fetch-contributors": "ts-node src/scripts/fetchContributors.ts",
-    "fetch-patrons": "ts-node src/scripts/fetchPatrons.ts",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "knip": "knip"

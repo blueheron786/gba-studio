@@ -137,7 +137,6 @@ module.exports = {
         __dirname,
         "contributors-external.json"
       ),
-      "patrons.json": Path.join(__dirname, "patrons.json"),
     },
     fallback: {
       path: require.resolve("path-browserify"),

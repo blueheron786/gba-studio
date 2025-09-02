@@ -78,7 +78,6 @@ module.exports = {
       ui: srcPath("components/ui"),
       shared: srcPath("shared"),
       consts: srcPath("consts.ts"),
-      "patrons.json": Path.join(__dirname, "patrons.json"),
     },
   },
   externals: {

@@ -29,7 +29,6 @@ import type { DebuggerDataPacket } from "shared/lib/debugger/types";
 import type { SceneMapData, VariableMapData } from "lib/compiler/compileData";
 import type { UsageData } from "lib/compiler/romUsage";
 import type { Asset, AssetType } from "shared/lib/helpers/assets";
-import type { Patrons } from "scripts/fetchPatrons";
 import type { LoadProjectResult } from "lib/project/loadProjectData";
 import {
   AvatarResourceAsset,
@@ -127,7 +126,6 @@ const APISetup = {
       ipcRenderer.invoke("app:get-is-full-screen"),
     deleteBuildCache: () => ipcRenderer.invoke("build:delete-cache"),
     setZoomLevel: (level: number) => webFrame.setZoomLevel(level),
-    getPatrons: (): Promise<Patrons> => ipcRenderer.invoke("app:get-patrons"),
     showProjectWindow: () => ipcRenderer.invoke("app:show-project-window"),
   },
   l10n: {

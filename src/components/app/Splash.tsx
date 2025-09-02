@@ -29,7 +29,6 @@ import { DotsIcon, LoadingIcon } from "ui/icons/Icons";
 import { Button } from "ui/buttons/Button";
 import contributors from "contributors.json";
 import contributorsExternal from "contributors-external.json";
-import inbuiltPatrons from "patrons.json";
 import gbs2Preview from "assets/templatePreview/gbs2.png";
 import gbhtmlPreview from "assets/templatePreview/gbhtml.png";
 import blankPreview from "assets/templatePreview/blank.png";
@@ -38,7 +37,6 @@ import l10n from "shared/lib/lang/l10n";
 import API from "renderer/lib/api";
 import { ERR_PROJECT_EXISTS } from "consts";
 import type { RecentProjectData } from "renderer/lib/api/setup";
-import type { Patrons } from "scripts/fetchPatrons";
 import {
   Credits,
   CreditsPerson,
@@ -127,8 +125,6 @@ const Splash = () => {
   const [creating, setCreating] = useState(false);
   const windowFocus = useWindowFocus();
 
-  const [patrons, setPatrons] = useState<Patrons>(inbuiltPatrons as Patrons);
-
   useEffect(() => {
     async function fetchData() {
       setRecentProjects((await API.project.getRecentProjects()).reverse());
@@ -141,10 +137,6 @@ const Splash = () => {
       setLoading(false);
     }
     fetchData();
-  }, []);
-
-  useEffect(() => {
-    API.app.getPatrons().then(setPatrons);
   }, []);
 
   useEffect(() => {
@@ -438,28 +430,6 @@ const Splash = () => {
                   }
                 >
                   {contributor.login}
-                </CreditsPerson>
-              ))}
-            </CreditsGrid>
-            <CreditsSubHeading>Patrons</CreditsSubHeading>
-            <CreditsGrid>
-              {(patrons.goldTier || []).map((patron) => (
-                <CreditsPerson key={patron.id} gold>
-                  {patron.attributes.full_name}
-                </CreditsPerson>
-              ))}
-            </CreditsGrid>
-            <CreditsGrid>
-              {(patrons.silverTier || []).map((patron) => (
-                <CreditsPerson key={patron.id}>
-                  {patron.attributes.full_name}
-                </CreditsPerson>
-              ))}
-            </CreditsGrid>
-            <CreditsGrid>
-              {(patrons.pastPatrons || []).map((patron) => (
-                <CreditsPerson key={patron.id}>
-                  {patron.attributes.full_name}
                 </CreditsPerson>
               ))}
             </CreditsGrid>

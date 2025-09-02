@@ -108,7 +108,6 @@ import pickBy from "lodash/pickBy";
 import keyBy from "lodash/keyBy";
 import { fileExists } from "lib/helpers/fs/fileExists";
 import confirmDeleteAsset from "lib/electron/dialog/confirmDeleteAsset";
-import { getPatronsFromGithub } from "lib/credits/getPatronsFromGithub";
 import {
   MusicResourceAsset,
   ProjectResources,
@@ -1330,10 +1329,6 @@ ipcMain.handle("app:get-is-full-screen", async () => {
     return projectWindow.isFullScreen();
   }
   return false;
-});
-
-ipcMain.handle("app:get-patrons", async () => {
-  return getPatronsFromGithub();
 });
 
 ipcMain.handle("clipboard:read-text", () => {
