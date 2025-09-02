@@ -1,3 +1,4 @@
+#include <stddef.h>
 #include "gba_types.h"
 #include "gba_system.h"
 
