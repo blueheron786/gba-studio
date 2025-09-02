@@ -1334,26 +1334,6 @@ const compileGBA = async (
   progress("Compiling for GBA...");
   console.log("[GBA COMPILE] Starting GBA compilation");
 
-  // Create simplified main.c for GBA
-  output["main.c"] = `#include "gba_system.h"
-#include "engine.h"
-
-int main() {
-    gba_init();
-    
-    // Basic test pattern
-    uint16_t* vram = MEM_VRAM;
-    for (int i = 0; i < 240 * 160; i++) {
-        vram[i] = (i % 32) * 1024; // Simple color gradient
-    }
-    
-    while (1) {
-        wait_vblank();
-    }
-    
-    return 0;
-}`;
-
   // Generate basic data files for GBA (using standard C types)
   output["bg_placeholder.c"] = `#include "gba_types.h"
 
