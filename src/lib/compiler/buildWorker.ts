@@ -87,6 +87,7 @@ const buildProject = async ({
 
   await validateEjectedBuild({
     buildRoot: outputRoot,
+    buildType,
     progress,
     warnings,
   });

@@ -1,20 +1,37 @@
-import { readFile } from "fs-extra";
+import { readFile, pathExists } from "fs-extra";
 import Path from "path";
 import l10n from "shared/lib/lang/l10n";
 
 type ValidateOptions = {
   buildRoot: string;
+  buildType?: string;
   progress: (msg: string) => void;
   warnings: (msg: string) => void;
 };
 
 export const validateEjectedBuild = async ({
   buildRoot,
+  buildType = "gb",
   progress = (_msg) => {},
   warnings = (_msg) => {},
 }: ValidateOptions) => {
+  progress(`${l10n("COMPILING_VALIDATING_BUILD_FILES")}...`);
+
+  // Skip VM validation for GBA builds as they don't use the GBVM system
+  if (buildType === "gba") {
+    progress("Skipping VM validation for GBA build");
+    return;
+  }
+
   const vmIncludePath = Path.join(buildRoot, "include/vm.h");
   const gameGlobalsPath = Path.join(buildRoot, "include/data/game_globals.i");
+  
+  // Check if vm.h exists (it should for GB builds)
+  if (!(await pathExists(vmIncludePath))) {
+    warnings("VM header file (vm.h) not found. This may indicate an incomplete engine installation.");
+    return;
+  }
+
   const vmInclude = await readFile(vmIncludePath, "utf8");
   const gameGlobals = await readFile(gameGlobalsPath, "utf8");
 
@@ -23,8 +40,6 @@ export const validateEjectedBuild = async ({
 
   const vmHeapSize = parseInt(vmHeapSizeStr ?? "", 10);
   const maxGlobalVars = parseInt(maxGlobalVarsStr ?? "", 10);
-
-  progress(`${l10n("COMPILING_VALIDATING_BUILD_FILES")}...`);
 
   if (isNaN(vmHeapSize) || isNaN(maxGlobalVars)) {
     warnings(
