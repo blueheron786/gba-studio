@@ -200,9 +200,9 @@ export const buildLinkFlags = (
       "-mthumb",
       "-mthumb-interwork", 
       "-mcpu=arm7tdmi",
-      "-T", "../gba.ld",  // Relative path from build/rom/ to build/ where gba.ld should be
-      "-o", `${romFilename}`,
-      `-Wl,-Map,game.map`,
+      "-T", "gba.ld",  // Linker script in build directory
+      "-o", `build/rom/${romFilename}`,
+      `-Wl,-Map,build/rom/game.map`,
       ...objFiles  // Spread the object files as individual arguments
     ];
   } else {
