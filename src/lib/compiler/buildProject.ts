@@ -111,6 +111,12 @@ const buildProject = async (
       `${outputRoot}/build/rom/${romFilename}`,
       `${outputRoot}/build/pocket/${romFilename}`,
     );
+  } else if (buildType === "gba") {
+    await fs.mkdir(`${outputRoot}/build/gba`);
+    await copy(
+      `${outputRoot}/build/rom/${romFilename}`,
+      `${outputRoot}/build/gba/${romFilename}`,
+    );
   }
   return compiledData;
 };
