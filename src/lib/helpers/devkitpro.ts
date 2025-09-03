@@ -5,6 +5,7 @@ export interface DevKitProPaths {
   devkitPro: string;
   devkitArm: string;
   gccPath: string;
+  objcopyPath: string;
   gbafixPath: string;
   isValid: boolean;
 }
@@ -16,6 +17,7 @@ export function getDevKitProPaths(): DevKitProPaths {
   
   if (devkitPro && devkitArm) {
     const gccPath = join(devkitArm, "bin", process.platform === "win32" ? "arm-none-eabi-gcc.exe" : "arm-none-eabi-gcc");
+    const objcopyPath = join(devkitArm, "bin", process.platform === "win32" ? "arm-none-eabi-objcopy.exe" : "arm-none-eabi-objcopy");
     const gbafixPath = join(devkitPro, "tools", "bin", process.platform === "win32" ? "gbafix.exe" : "gbafix");
     
     if (existsSync(gccPath)) {
@@ -23,6 +25,7 @@ export function getDevKitProPaths(): DevKitProPaths {
         devkitPro,
         devkitArm,
         gccPath,
+        objcopyPath,
         gbafixPath,
         isValid: true
       };
@@ -45,6 +48,7 @@ export function getDevKitProPaths(): DevKitProPaths {
   for (const basePath of commonPaths) {
     const armPath = join(basePath, "devkitARM");
     const gccPath = join(armPath, "bin", process.platform === "win32" ? "arm-none-eabi-gcc.exe" : "arm-none-eabi-gcc");
+    const objcopyPath = join(armPath, "bin", process.platform === "win32" ? "arm-none-eabi-objcopy.exe" : "arm-none-eabi-objcopy");
     const gbafixPath = join(basePath, "tools", "bin", process.platform === "win32" ? "gbafix.exe" : "gbafix");
     
     if (existsSync(gccPath)) {
@@ -52,6 +56,7 @@ export function getDevKitProPaths(): DevKitProPaths {
         devkitPro: basePath,
         devkitArm: armPath,
         gccPath,
+        objcopyPath,
         gbafixPath,
         isValid: true
       };
@@ -63,6 +68,7 @@ export function getDevKitProPaths(): DevKitProPaths {
     devkitPro: "",
     devkitArm: "",
     gccPath: "",
+    objcopyPath: "",
     gbafixPath: "",
     isValid: false
   };

@@ -1,4 +1,4 @@
-import { copy, readFile, writeFile } from "fs-extra";
+import { copy, readFile, writeFile, readJSON, pathExists } from "fs-extra";
 import Path from "path";
 import os from "os";
 import rimraf from "rimraf";
@@ -17,7 +17,7 @@ const rmdir = promisify(rimraf);
 
 declare const VERSION: string;
 
-type Command = "export" | "make:rom" | "make:pocket" | "make:web";
+type Command = "export" | "make:rom" | "make:pocket" | "make:web" | "make:gba";
 
 const buildTypeForCommand = (command: Command): BuildType => {
   if (command === "make:web") {
@@ -25,6 +25,9 @@ const buildTypeForCommand = (command: Command): BuildType => {
   }
   if (command === "make:pocket") {
     return "pocket";
+  }
+  if (command === "make:gba") {
+    return "gba";
   }
   return "rom";
 };
@@ -34,33 +37,73 @@ const main = async (
   projectFile: string,
   destination: string,
 ) => {
-  initElectronL10N();
+  try {
+    initElectronL10N();
 
-  // Load project file
-  const projectRoot = Path.resolve(Path.dirname(projectFile));
-  const loadedProject = await loadProject(projectFile);
-  const project = decompressProjectResources(loadedProject.resources);
-  const buildType = buildTypeForCommand(command);
+    console.log(`[CLI DEBUG] Starting CLI with command: ${command}`);
+    
+    const buildType = buildTypeForCommand(command);
+    console.log(`[CLI DEBUG] Build type: ${buildType}`);
 
-  // Load engine schema
-  const engineSchema = await loadEngineSchema(projectRoot);
-
-  // Use OS default tmp
-  const tmpPath = os.tmpdir();
-  const tmpBuildDir = Path.join(tmpPath, "_gbsbuild");
-  const outputRoot = tmpBuildDir;
-
-  const progress = (message: string) => {
-    if (program.verbose) {
-      console.log(message);
+    // Override the default engine path for GBA builds BEFORE loading anything
+    if (buildType === "gba") {
+      const consts = require("consts");
+      console.log(`[CLI DEBUG] consts.enginesRoot: ${consts.enginesRoot}`);
+      console.log(`[CLI DEBUG] Current __dirname: ${__dirname}`);
+      
+      // Fix the root directory calculation for CLI
+      const currentDir = __dirname; // D:\code\gba-studio\out\cli
+      const rootDir = currentDir.substring(0, currentDir.lastIndexOf("out\\cli"));
+      const correctEnginesRoot = Path.join(rootDir, "appData", "engine");
+      const gbaEnginePath = Path.join(correctEnginesRoot, "gbavm", "engine.json");
+      
+      console.log(`[CLI DEBUG] Fixed rootDir: ${rootDir}`);
+      console.log(`[CLI DEBUG] Fixed enginesRoot: ${correctEnginesRoot}`);
+      console.log(`[CLI DEBUG] GBA engine path: ${gbaEnginePath}`);
+      
+      // Override all paths
+      const correctBuildToolsRoot = Path.join(rootDir, "buildTools");
+      const correctBinjgbRoot = Path.join(rootDir, "appData", "wasm", "binjgb");
+      
+      (consts as any).enginesRoot = correctEnginesRoot;
+      (consts as any).defaultEngineMetaPath = gbaEnginePath;
+      (consts as any).defaultEngineRoot = Path.join(correctEnginesRoot, "gbavm");
+      (consts as any).buildToolsRoot = correctBuildToolsRoot;
+      (consts as any).binjgbRoot = correctBinjgbRoot;
+      
+      console.log(`[CLI DEBUG] Fixed buildToolsRoot: ${correctBuildToolsRoot}`);
     }
-  };
 
-  const warnings = (message: string) => {
-    if (program.verbose) {
-      console.warn(message);
-    }
-  };
+    // Load project file
+    const projectRoot = Path.resolve(Path.dirname(projectFile));
+    console.log(`[CLI DEBUG] Project root: ${projectRoot}`);
+    
+    const loadedProject = await loadProject(projectFile);
+    console.log(`[CLI DEBUG] Project loaded successfully`);
+    
+    const project = decompressProjectResources(loadedProject.resources);
+    console.log(`[CLI DEBUG] Project decompressed successfully`);
+
+    // Load engine schema  
+    const engineSchema = loadedProject.engineSchema;
+    console.log(`[CLI DEBUG] Engine schema loaded successfully`);
+
+    // Use OS default tmp
+    const tmpPath = os.tmpdir();
+    const tmpBuildDir = Path.join(tmpPath, "_gbsbuild");
+    const outputRoot = tmpBuildDir;
+
+    const progress = (message: string) => {
+      if (program.verbose) {
+        console.log(message);
+      }
+    };
+
+    const warnings = (message: string) => {
+      if (program.verbose) {
+        console.warn(message);
+      }
+    };
 
   const colorOnly = project.settings.colorMode === "color";
 
@@ -108,6 +151,9 @@ const main = async (
   } else if (command === "make:pocket") {
     const romTmpPath = Path.join(tmpBuildDir, "build", "rom", romFilename);
     await copy(romTmpPath, destination);
+  } else if (command === "make:gba") {
+    const romTmpPath = Path.join(tmpBuildDir, "build", "rom", romFilename);
+    await copy(romTmpPath, destination);
   } else if (command === "make:web") {
     const romTmpPath = Path.join(tmpBuildDir, "build", "rom", romFilename);
     await copy(binjgbRoot, destination);
@@ -144,6 +190,10 @@ const main = async (
     await writeFile(`${destination}/index.html`, html);
     await writeFile(`${destination}/js/script.js`, scriptJs);
   }
+  } catch (error) {
+    console.error('[CLI ERROR] Failed to execute command:', error);
+    process.exit(1);
+  }
 };
 
 program.version(VERSION);
@@ -167,6 +217,13 @@ program
   .description("Build a Pocket from project file")
   .action((source, destination) => {
     main("make:pocket", source, destination);
+  });
+
+program
+  .command("make:gba <projectFile> <destination.gba>")
+  .description("Build a GBA ROM from project file")
+  .action((source, destination) => {
+    main("make:gba", source, destination);
   });
 
 program

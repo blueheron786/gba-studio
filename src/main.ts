@@ -1454,15 +1454,18 @@ ipcMain.handle(
         );
       }
 
-      const usageData = await romUsage({
-        buildRoot: outputRoot,
-        romStem,
-        tmpPath: getTmp(),
-        progress,
-        warnings,
-      });
+      // Calculate ROM usage (Game Boy only)
+      if (buildType !== "gba") {
+        const usageData = await romUsage({
+          buildRoot: outputRoot,
+          romStem,
+          tmpPath: getTmp(),
+          progress,
+          warnings,
+        });
 
-      sendToProjectWindow("debugger:romusage", usageData);
+        sendToProjectWindow("debugger:romusage", usageData);
+      }
 
       if (buildType === "web" && !exportBuild) {
         buildLog(`-`);

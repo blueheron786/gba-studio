@@ -234,6 +234,32 @@ const makeBuild = async ({
   await linkCompleted;
   childSet.delete(child);
 
+  // Convert ELF to binary ROM (GBA only)
+  if (isGBA) {
+    progress("Converting ELF to binary ROM...");
+    const devkitPaths = getDevKitProPaths();
+    const elfPath = `${buildRoot}/build/rom/game.elf`;
+    const romPath = `${buildRoot}/build/rom/${romFilename}`;
+    
+    if (devkitPaths.objcopyPath) {
+      const { completed: objcopyCompleted, child: objcopyChild } = spawn(
+        devkitPaths.objcopyPath,
+        ["-O", "binary", elfPath, romPath],
+        options,
+        {
+          onLog: (msg) => progress(msg),
+          onError: (msg) => warnings(msg),
+        },
+      );
+      
+      childSet.add(objcopyChild);
+      await objcopyCompleted;
+      childSet.delete(objcopyChild);
+    } else {
+      warnings("objcopy not found in devkitARM toolchain");
+    }
+  }
+
   // Fix GBA ROM header (GBA only)
   if (isGBA) {
     progress("Fixing GBA ROM header...");

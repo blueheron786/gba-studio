@@ -201,7 +201,7 @@ export const buildLinkFlags = (
       "-mthumb-interwork", 
       "-mcpu=arm7tdmi",
       "-T", "gba.ld",  // Linker script in build directory
-      "-o", `build/rom/${romFilename}`,
+      "-o", `build/rom/game.elf`,  // Output ELF file first
       `-Wl,-Map,build/rom/game.map`,
       ...objFiles  // Spread the object files as individual arguments
     ];

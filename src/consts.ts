@@ -3,13 +3,18 @@ import type { Palette } from "shared/lib/entities/entitiesTypes";
 import { CollisionTileDef, Settings } from "shared/lib/resources/types";
 
 const isDist = __dirname.indexOf(".webpack") > -1;
-const isCli = __dirname.indexOf("out/cli") > -1;
+const isCli = __dirname.indexOf("out/cli") > -1 || __dirname.indexOf("out\\cli") > -1;
 
 let rootDir = __dirname.substring(0, __dirname.lastIndexOf("node_modules"));
 if (isDist) {
   rootDir = __dirname.substring(0, __dirname.lastIndexOf(".webpack"));
 } else if (isCli) {
-  rootDir = __dirname.substring(0, __dirname.lastIndexOf("out/cli"));
+  // Handle both Unix and Windows path separators
+  let pathSeparator = "out/cli";
+  if (__dirname.indexOf("out\\cli") > -1) {
+    pathSeparator = "out\\cli";
+  }
+  rootDir = __dirname.substring(0, __dirname.lastIndexOf(pathSeparator));
 } else if (process.env.NODE_ENV === "test") {
   rootDir = normalize(`${__dirname}/../`);
 }
