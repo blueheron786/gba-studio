@@ -19,6 +19,9 @@ void engine_init(void) {
     // Initialize GBA hardware
     gba_init();
     
+    // Set Mode 3 immediately for testing
+    REG_DISPCNT = MODE_3 | BG2_ENABLE;
+    
     // Load default palette
     load_palette(default_palette, 0, 4);
     
@@ -36,6 +39,12 @@ void engine_init(void) {
     // Clear all actors
     for (int i = 0; i < 16; i++) {
         actors[i].active = false;
+    }
+    
+    // Draw initial pattern immediately to test
+    uint16_t* vram = (uint16_t*)MEM_VRAM;
+    for (int i = 0; i < 240 * 160; i++) {
+        vram[i] = RGB15(31, 0, 31);  // Bright magenta to test
     }
 }
 
@@ -67,10 +76,10 @@ void engine_render(void) {
     wait_vblank();
     
     // Render background
-    // TODO: Implement background rendering
+    // TODO: Implement background rendering from project data
     
-    // Render sprites/actors
-    // TODO: Implement sprite rendering
+    // Render sprites/actors  
+    // TODO: Implement sprite rendering from project data
 }
 
 void engine_run(void) {

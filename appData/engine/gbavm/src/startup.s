@@ -21,19 +21,14 @@ _rom_header:
     .space 2, 0                    @; 0xBE-0xBF: Reserved
 
 _start:
-    @; Minimal startup - just infinite loop for now
-    mov r0, #0x1F                  @; System mode  
-    msr cpsr, r0                   @; Set processor mode
-    ldr sp, =0x03007FA0            @; Set stack pointer
-    
-_loop:
-    b _loop                        @; Infinite loop
+    @; Set up processor modes and stack
+    mov r0, #0x12                  @; IRQ mode
     msr cpsr, r0
-    ldr sp, =0x03007FA0  @; Set IRQ stack
+    ldr sp, =0x03007FA0            @; Set IRQ stack
     
-    mov r0, #0x1F        @; System mode
+    mov r0, #0x1F                  @; System mode
     msr cpsr, r0
-    ldr sp, =0x03008000  @; Set system stack
+    ldr sp, =0x03008000            @; Set system stack
     
     @; Initialize .data section
     ldr r0, =__data_load

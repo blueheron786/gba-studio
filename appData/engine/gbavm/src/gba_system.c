@@ -5,7 +5,7 @@ static uint16_t keys_previous = 0;
 
 void gba_init(void) {
     // Initialize GBA system
-    // Set up display mode 0 with BG0 enabled
+    // Set up display mode 0 with BG0 enabled for tile-based rendering
     REG_DISPCNT = MODE_0 | BG0_ENABLE;
     
     // Clear VRAM
