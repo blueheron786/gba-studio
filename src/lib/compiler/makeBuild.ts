@@ -255,6 +255,18 @@ const makeBuild = async ({
       childSet.add(objcopyChild);
       await objcopyCompleted;
       childSet.delete(objcopyChild);
+      
+      // Pad ROM to minimum size for emulator compatibility
+      progress("Padding ROM to minimum size...");
+      const romStat = await fs.stat(romPath);
+      const minRomSize = 2 * 1024 * 1024; // 2MB minimum (required for mGBA compatibility)
+      
+      if (romStat.size < minRomSize) {
+        const paddingSize = minRomSize - romStat.size;
+        const padding = Buffer.alloc(paddingSize, 0xFF); // Fill with 0xFF (common for ROM padding)
+        await fs.appendFile(romPath, padding);
+        progress(`Padded ROM from ${romStat.size} to ${minRomSize} bytes`);
+      }
     } else {
       warnings("objcopy not found in devkitARM toolchain");
     }

@@ -5,24 +5,29 @@
 .global _start
 .arm
 
-@; GBA ROM Header
-.byte 0x00, 0x00, 0x00, 0xEA  @; Branch instruction to start
-.space 156, 0                  @; Nintendo logo area (filled by gbafix)
-.ascii "GBASTUDIO"            @; Game title (12 chars max)
-.space 3, 0
-.ascii "GBAS"                 @; Game code (4 chars)
-.ascii "01"                   @; Maker code (2 chars)
-.byte 0x96                    @; Fixed value
-.byte 0x00                    @; Main unit code
-.byte 0x00                    @; Device type
-.space 7, 0                   @; Reserved
-.byte 0x00                    @; Software version
-.byte 0x00                    @; Complement check (filled by gbafix)
-.space 2, 0                   @; Reserved
+@; GBA ROM Header - must be exactly at ROM offset 0x00000000
+_rom_header:
+    b _start                        @; 0x00: Branch to _start (simple branch)
+    .space 156, 0                   @; 0x04-0x9F: Nintendo logo area (filled by gbafix)
+    .ascii "GBASTUDIO   "          @; 0xA0-0xAB: Game title (12 chars)
+    .ascii "GBAS"                  @; 0xAC-0xAF: Game code (4 chars)  
+    .ascii "01"                    @; 0xB0-0xB1: Maker code (2 chars)
+    .byte 0x96                     @; 0xB2: Fixed value
+    .byte 0x00                     @; 0xB3: Main unit code
+    .byte 0x00                     @; 0xB4: Device type
+    .space 7, 0                    @; 0xB5-0xBB: Reserved
+    .byte 0x00                     @; 0xBC: Software version
+    .byte 0x00                     @; 0xBD: Complement check (filled by gbafix)
+    .space 2, 0                    @; 0xBE-0xBF: Reserved
 
 _start:
-    @; Switch to ARM mode
-    mov r0, #0x12        @; IRQ mode
+    @; Minimal startup - just infinite loop for now
+    mov r0, #0x1F                  @; System mode  
+    msr cpsr, r0                   @; Set processor mode
+    ldr sp, =0x03007FA0            @; Set stack pointer
+    
+_loop:
+    b _loop                        @; Infinite loop
     msr cpsr, r0
     ldr sp, =0x03007FA0  @; Set IRQ stack
     

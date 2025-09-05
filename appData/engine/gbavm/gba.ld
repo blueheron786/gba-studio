@@ -11,9 +11,14 @@ MEMORY
 
 SECTIONS
 {
-    .text :
+    /* Ensure startup code is at absolute beginning */
+    .startup 0x08000000 :
     {
         *(.text.startup)
+    } > rom
+    
+    .text :
+    {
         *(.text)
         *(.rodata)
         . = ALIGN(4);
