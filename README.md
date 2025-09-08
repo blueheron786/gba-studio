@@ -1,10 +1,14 @@
 # GBA Studio
 
-- GBA Studio Copyright (c) 2024 Chris Maltby, released under the [MIT license](https://opensource.org/licenses/MIT).
 - GBA Studio Copyright (c) 2025 Blue Heron, also released under the MIT license.
+- GB Studio Copyright (c) 2024 Chris Maltby, released under the [MIT license](https://opensource.org/licenses/MIT).
 g/bxerKnc)
 
 GBA Studio is an experimental fork of GBA Studio that's tailored for GBA game development. Like the original, GBA Studio aims to provide a quick and easy way to use retro adventure game creator for Game Boy Advance, available for Mac, Linux and Windows.
+
+## ⚠️ Maintainers Wanted ⚠️
+
+This project is a prototype. I'm not a JS/TS expert, nor a GBA ROM expert. If you can take over where I've left off, please let me know.
 
 ## Features
 
